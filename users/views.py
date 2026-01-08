@@ -137,10 +137,12 @@ class LoginView(APIView):
         profile, created = Profile.objects.get_or_create(user=user)
 
         if IS_TWOFA_MANDATORY or profile.twofa_enabled:
-            profile.twofa_enabled = True
-            profile.save()
+
             return Response(
-                {"error": "Two step verification is mandatory."},
+                {
+                    "error": "Two step verification is mandatory.",
+                    "verify": True,
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
         password = (request.data.get("password") or "").strip()
@@ -204,7 +206,7 @@ class SendVerificationCodeView(APIView):
         except Exception as e:
 
             return Response(
-                {"message": f"Unable to send the code{str(e)}."},
+                {"message": f"Unable to send the code. Try later."},
                 status=status.HTTP_501_NOT_IMPLEMENTED,
             )
 
