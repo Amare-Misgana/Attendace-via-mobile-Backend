@@ -165,6 +165,7 @@ class SendVerificationCodeView(APIView):
     authentication_classes = [JWTAuthentication]
 
     def post(self, request):
+        print("send verification has been touched!!")
 
         if request.user.is_authenticated:
             return Response(
