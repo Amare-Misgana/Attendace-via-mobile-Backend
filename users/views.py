@@ -182,7 +182,7 @@ class SendVerificationCodeView(APIView):
 
         if not user:
             return Response(
-                {"error": "Invalid Email."}, status=status.HTTP_400_BAD_REQUEST
+                {"error": "Invalid Username."}, status=status.HTTP_400_BAD_REQUEST
             )
 
         if not user.email:
@@ -190,9 +190,15 @@ class SendVerificationCodeView(APIView):
                 {"error": "User doesn't have email."}, status=status.HTTP_404_NOT_FOUND
             )
 
-        old_email_verify = VerifyEmail.objects.filter(user=user).first()
-        if old_email_verify:
-            old_email_verify.delete()
+        try:
+            old_email_verify = VerifyEmail.objects.filter(user=user).first()
+            if old_email_verify:
+                old_email_verify.delete()
+        except Exception as e:
+            return Response(
+                {"error": "Unable to delete old verification code."},
+                status=status.HTTP_510_NOT_EXTENDED,
+            )
 
         try:
             email_verif = VerifyEmail.objects.create(user=user)
