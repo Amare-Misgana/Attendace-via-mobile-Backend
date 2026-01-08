@@ -11,8 +11,7 @@ from .models import VerifyEmail, Profile, PermissionVerify
 from django.contrib.auth import authenticate
 from django.db import transaction
 from django.conf import settings
-from django.core.mail import send_mail
-
+from utils.mail import send_email
 
 IS_TWOFA_MANDATORY = settings.IS_TWOFA_MANDATORY
 
@@ -203,11 +202,58 @@ class SendVerificationCodeView(APIView):
 
         try:
             email_verif = VerifyEmail.objects.create(user=user)
-            send_mail(
-                subject="Verify your email",
-                message=f"Your verification code is {email_verif.code}",
-                from_email=EMAIL,
-                recipient_list=[user.email],
+            html_content = f"""
+            <div style="font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#f5f6f8;padding:32px;">
+              <div style="max-width:560px;margin:0 auto;">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:44px;height:44px;border-radius:10px;
+                              background:linear-gradient(135deg,#FD8A6B 0%,#FA5C5C 100%);
+                              display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;">
+                    M
+                  </div>
+                  <div>
+                    <div style="font-size:16px;font-weight:700;color:#111;">MeetMark</div>
+                    <div style="font-size:12px;color:#666;margin-top:2px;">Verification Code</div>
+                  </div>
+                </div>
+
+                <div style="background:#ffffff;border-radius:12px;padding:28px;margin-top:18px;
+                            box-shadow:0 8px 30px rgba(16,24,40,0.06);">
+                  <div style="font-size:15px;color:#222;margin-bottom:18px;">
+                    Use the verification code below to verify your email address.
+                  </div>
+
+                  <div style="text-align:center;margin:18px 0;">
+                    <div style="display:inline-block;padding:18px 28px;border-radius:12px;
+                                font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace;
+                                font-size:48px;letter-spacing:6px;font-weight:700;
+                                background:linear-gradient(90deg,#FD8A6B 0%,#FA5C5C 100%);
+                                color:#fff;">
+                      {email_verif.code}
+                    </div>
+                  </div>
+
+                  <div style="font-size:13px;color:#FA5C5C;font-weight:600;margin-top:12px;">
+                    Do not share this code with anyone. MeetMark will never ask for this code.
+                  </div>
+
+                  <div style="font-size:12px;color:#666;margin-top:18px;">
+                    If you did not request this, you can safely ignore this email.
+                  </div>
+                </div>
+
+                <div style="text-align:center;color:#999;font-size:12px;margin-top:18px;">
+                  © {{"MeetMark"}} — Keep your account secure
+                </div>
+              </div>
+            </div>
+            """
+
+            send_email(
+                to_email=user.email,
+                subject="MeetMark — Your verification code",
+                html_content=html_content,
+                sender_name="MeetMark",
             )
 
         except Exception as e:
