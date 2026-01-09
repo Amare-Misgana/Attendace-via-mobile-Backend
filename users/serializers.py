@@ -128,6 +128,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             )
         profile = Profile(**validated_data)
         profile.save()
+        return profile
 
     def update(self, instance, validated_data):
         profile_pic_file = self.context["request"].FILES.get("profile_pic")
@@ -147,12 +148,11 @@ class ProfileSerializer(serializers.ModelSerializer):
         if not request or not request.user.is_authenticated:
             return value
 
-        profile = self.instance  # current profile (important)
-
         if IS_TWOFA_MANDATORY and value is False:
             raise serializers.ValidationError(
                 "You can't disable two-factor authentication."
             )
+        print(IS_TWOFA_MANDATORY)
 
         return value
 

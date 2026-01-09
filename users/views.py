@@ -355,7 +355,8 @@ class EditProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
     def patch(self, request):
-        profile = request.user.profile
+        user = request.user
+        profile, created = Profile.objects.get_or_create(user=user)
         serializer = ProfileSerializer(
             instance=profile,
             data=request.data,
