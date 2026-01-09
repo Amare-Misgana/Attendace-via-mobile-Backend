@@ -191,7 +191,7 @@ SIMPLE_JWT = {
 }
 
 # Settings
-IS_TWOFA_MANDATORY = True
+IS_TWOFA_MANDATORY = env("IS_TWOFA_MANDATORY")
 
 
 # Source - https://stackoverflow.com/a/73013598
