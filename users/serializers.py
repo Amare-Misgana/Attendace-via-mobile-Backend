@@ -149,7 +149,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
         profile = self.instance  # current profile (important)
 
-        if IS_TWOFA_MANDATORY and profile.twofa_enabled and value is False:
+        if IS_TWOFA_MANDATORY and value is False:
             raise serializers.ValidationError(
                 "You can't disable two-factor authentication."
             )
