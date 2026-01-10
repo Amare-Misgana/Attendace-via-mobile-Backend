@@ -8,7 +8,8 @@ from .views import (
     DeleteSessionView,
     DeleteUsersView,
     ClosedSessionAttendanceView,
-    EditAttendanceRecoredView,
+    EditAttendanceRecordView,
+    GetUserAttendanceHistory,
 )
 
 urlpatterns = [
@@ -21,9 +22,10 @@ urlpatterns = [
     path("session/delete/<int:session_id>/", AttendanceSessionView.as_view()),
     path("attendance/recored/code/", AttendanceViaCodeView.as_view()),
     path("attendance/recored/", AttendanceView.as_view()),
+    path("attendance/recored/stats/", GetUserAttendanceHistory.as_view()),
     path(
         "attendance/recored/edit/<int:attendance_id>/",
-        EditAttendanceRecoredView.as_view(),
+        EditAttendanceRecordView.as_view(),
     ),
     path("session/end/<int:session_id>/", EndAttendanceSession.as_view()),
     path("session/delete/code/<int:session_id>/", DeleteSessionViaCodeView.as_view()),

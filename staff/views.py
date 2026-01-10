@@ -210,7 +210,7 @@ class AttendanceView(APIView):
 
             if attendance_exists:
                 return Response(
-                    {"error": "Attendance recored already set for this user."},
+                    {"error": "Attendance record already set for this user."},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
@@ -270,7 +270,7 @@ class AttendanceView(APIView):
 
             if not attendance_exists:
                 return Response(
-                    {"error": "Attendance recored doesn't exist for this user."},
+                    {"error": "Attendance record doesn't exist for this user."},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
@@ -318,7 +318,7 @@ class AttendanceView(APIView):
 
             if not attendance_exists:
                 return Response(
-                    {"error": "Attendance recored doesn't exist for this user."},
+                    {"error": "Attendance record doesn't exist for this user."},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
@@ -388,7 +388,7 @@ class AttendanceViaCodeView(APIView):
 
         if attendance_exists:
             return Response(
-                {"error": "Attendance recored already set for this user."},
+                {"error": "Attendance record already set for this user."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -520,7 +520,7 @@ class ClosedSessionAttendanceView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class EditAttendanceRecoredView(APIView):
+class EditAttendanceRecordView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdminUser]
 
@@ -554,7 +554,7 @@ class EditAttendanceRecoredView(APIView):
             )
         except Attendance.DoesNotExist:
             return Response(
-                {"error": "Attendance recored doesn't exist."},
+                {"error": "Attendance record doesn't exist."},
                 status=status.HTTP_404_NOT_FOUND,
             )
 
@@ -564,3 +564,20 @@ class EditAttendanceRecoredView(APIView):
         return Response(
             {"message": "Attendace updated successfully."}, status=status.HTTP_200_OK
         )
+
+
+class GetUserAttendanceHistory(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAdminUser]
+
+    def get(self, request, user_id):
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response(
+                {"error": "User doesn't exist."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        records = Attendance.objects.filter(user=user)
+        serializer = AttendanceSerializer(records, many=True)
+        return Response({"records": serializer.data}, status=status.HTTP_200_OK)
