@@ -59,11 +59,12 @@ class UserSerializer(serializers.ModelSerializer):
             "password",
             "last_login",
             "is_active",
+            "is_staff",
             "date_joined",
             "code",
             "profile",
         ]
-        read_only_fields = ["date_joined", "code", "last_login"]
+        read_only_fields = ["date_joined", "code", "last_login", "is_staff"]
 
     def get_profile(self, obj):
         from .serializers import ProfileSerializer
@@ -152,7 +153,6 @@ class ProfileSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 "You can't disable two-factor authentication."
             )
-        print(IS_TWOFA_MANDATORY)
 
         return value
 
